@@ -2,15 +2,30 @@ import axios from 'axios';
 import React from 'react';
 import { Card, Table, Pagination } from 'react-bootstrap';
 
-const wasteColors = {
-    'sklo': '#008e5c',
-    'papier': '#0072bb',
-    'plasty': '#ffd413',
+export const wasteColors = {
+    'Sklo': '#008e5c',
+    'Papier': '#0072bb',
+    'Plast': '#ffd413',
     'oleje': '#f36f24',
+    'Odpad z čistenia ulic': '#7c4f25',
     'BRO': '#7c4f25',
-    'zmes': '#1d1d1b',
-    'kov': '#e30711',
-    'napoje': '#f07e01'
+    'Odpad zo ZZ': '#1d1d1b',
+    'Zmiešaný odpad': '#1d1d1b',
+    'KBRO': '#e30711',
+    'Gastro': '#f07e01'
+}
+
+export const wasteTags = {
+    'Sklo': 'SKLO',
+    'Papier': 'PAPIER',
+    'Plast': 'PLAST',
+    'Odpad zo ZZ': 'ZMES',
+    'oleje': 'GASTRO',
+    'Odpad z čistenia ulic': 'BRO',
+    'BRO': 'BRO',
+    'Zmiešaný odpad': 'ZMES',
+    'KBRO': 'KOV',
+    'Gastro': 'GASTRO'
 }
 
 class NotificationWidget extends React.Component {
@@ -19,7 +34,7 @@ class NotificationWidget extends React.Component {
 
         this.state = {
             maxPage: 5,
-            perPage: 19,
+            perPage: 20,
             page: 1,
             notifications: []
         }
@@ -88,11 +103,8 @@ class NotificationWidget extends React.Component {
         else
             numbers = [this.state.page - 2, this.state.page - 1, this.state.page, this.state.page + 1, this.state.page + 2]
 
-        return <Pagination size='sm' style={{
-            position: 'absolute',
-            bottom: '10px',
-            marginTop: '10px',
-            left: '20%'
+        return <Pagination size='sm' variant='light' style={{
+            justifyContent: 'center'
         }}>
             <Pagination.First disabled={this.state.page === 1} onClick={e => this.handlePageChange(e, 1)} />
             <Pagination.Prev disabled={this.state.page === 1} onClick={e => this.handlePagePrev(e)} />
@@ -110,29 +122,31 @@ class NotificationWidget extends React.Component {
 
     render() {
         return (
-            <Card style={{ textAlign: 'left', margin: '20px', padding: '10px', height: '80vh', position: 'relative' }}>
+            <Card style={{ textAlign: 'left', margin: '20px', padding: '10px', height: '80vh' }}>
                 <Card.Title>WasteBin Alerts</Card.Title>
-                <Table striped hover size="sm">
+                <Table style={{tableLayout:'fixed'}} borderless striped hover size="sm">
                     <thead>
-                        <th>Type</th>
-                        <th>ID</th>
-                        <th>Severity</th>
-                        <th>Part</th>
-                        <th>Address</th>
+                        <th style={{ width: '15%' }}>Part</th>
+                        <th style={{ width: '20%' }}>Address</th>
+                        <th style={{ width: '10%' }}>Severity</th>
+                        <th style={{ width: '10%' }}>Volume</th>
+                        <th style={{ width: '10%' }}>Type</th>
                     </thead>
                     <tbody>
                         {
                             this.state.notifications.slice((this.state.page - 1) * this.state.perPage, (this.state.page - 1) * this.state.perPage + this.state.perPage).map(n =>
-                                <tr style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    <td style={{ 
-                                        backgroundColor: wasteColors[n.waste_type], 
-                                        textAlign: 'center' }}>
-                                            <b>{n.waste_type}</b>
-                                        </td>
-                                    <td>{n.bin_id}</td>
+                                <tr>
+                                    <td style={{width:'100px', whiteSpace:'nowrap', overflow:'hidden', textOverflow: 'ellipsis'}}>{n.city_part}</td>
+                                    <td style={{width:'100px', whiteSpace:'nowrap', overflow:'hidden', textOverflow: 'ellipsis'}}>{n.street} {n.orientation_number}</td>
                                     <td>{n.severity}</td>
-                                    <td>{n.city_part}</td>
-                                    <td>{n.street}</td>
+                                    <td>{n.volume_in_litres} l</td>
+                                    <td style={{
+                                        backgroundColor: wasteColors[n.waste_type],
+                                        textAlign: 'center',
+                                        color: wasteTags[n.waste_type] == 'ZMES' ? 'white' : 'black'
+                                    }}>
+                                        <b>{wasteTags[n.waste_type]?wasteTags[n.waste_type]:n.waste_type}</b>
+                                    </td>
                                 </tr>
                             )
                         }
