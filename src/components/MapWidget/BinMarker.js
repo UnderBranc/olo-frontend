@@ -11,6 +11,13 @@ class BinMarker extends React.Component {
         severity: 1
     };
 
+    getPrio(severity){
+        if(severity<=2)
+            return 'LOW'
+        else
+            return 'HIGH'
+    }
+
     render() {
         return (
             <OverlayTrigger
@@ -29,7 +36,7 @@ class BinMarker extends React.Component {
                             <b style={{fontSize:'18px'}}>{this.props.type}</b> ({this.props.bin.volume_in_litres} l.)
                         </Popover.Header>
                         <Popover.Body>
-                            {this.props.bin.severity} Alerts.
+                            Priority: <b>{this.getPrio(this.props.bin.severity)}</b> ({this.props.bin.severity} Alerts.)
                         </Popover.Body>
                     </Popover>
                 }>
@@ -49,7 +56,7 @@ class BinMarker extends React.Component {
                         marginLeft: '3px',
                         marginTop: '2px'
                     }}
-                        src="./images/bin.svg"
+                        src="./dashboard/images/bin.svg"
                         width={this.props.size - 10}
                         height={this.props.size - 8}></Image>
                 </div>

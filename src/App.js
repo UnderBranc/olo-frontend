@@ -5,6 +5,11 @@ import NotificationWidget from './components/NotificationWidget/NotificationWidg
 import { useEffect } from 'react';
 import React from 'react';
 import axios from 'axios';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from 'react-router-dom'
 
 const defaultZoom = 12
 const defaultCenter = {
@@ -14,22 +19,22 @@ const defaultCenter = {
 
 function App() {
   const [districts, setDistricts] = React.useState([
-    { 'name': 'Devín', 'lat': 48.17576940000001, 'lng': 16.9822035, "total": 85 , "percentage": 50},
-    { 'name': 'Devínska Nová Ves', 'lat': 48.2124272, 'lng': 16.977857450000002, "total": 252 , "percentage": 50},
-    { 'name': 'Dúbravka', 'lat': 48.18664769999999, 'lng': 17.0307259, "total": 99 , "percentage": 50},
-    { 'name': 'Jarovce', 'lat': 48.0656973, 'lng': 17.1130712, "total": 198 , "percentage": 50},
-    { 'name': 'Karlova Ves', 'lat': 48.1586236, 'lng': 17.0567608, "total": 65 , "percentage": 50},
-    { 'name': 'Nové Mesto', 'lat': 48.171957, 'lng': 17.1116032, "total": 496 , "percentage": 50},
-    { 'name': 'Petržalka', 'lat': 48.1264994, 'lng': 17.093808, "total": 77 , "percentage": 50},
-    { 'name': 'Podunajské Biskupice', 'lat': 48.12717869999999, 'lng': 17.2129755, "total": 362 , "percentage": 50},
-    { 'name': 'Rača', 'lat': 48.2089267, 'lng': 17.1526131, "total": 5 , "percentage": 50},
-    { 'name': 'Rusovce', 'lat': 48.0482758, 'lng': 17.1482599, "total": 131 , "percentage": 50},
-    { 'name': 'Ružinov', 'lat': 48.14632169999999, 'lng': 17.1686429, "total": 129 , "percentage": 50},
-    { 'name': 'Staré Mesto', 'lat': 48.1527568, 'lng': 17.0916014, "total": 502 , "percentage": 50},
-    { 'name': 'Vajnory', 'lat': 48.1985806, 'lng': 17.201461, "total": 2 , "percentage": 50},
-    { 'name': 'Vrakuňa', 'lat': 48.1448249, 'lng': 17.2028947, "total": 9 , "percentage": 50},
-    { 'name': 'Záhorská Bystrica', 'lat': 48.24226059999999, 'lng': 17.0543847, "total": 2 , "percentage": 50},
-    { 'name': 'Čunovo', 'lat': 48.0303903, 'lng': 17.194552350000002, "total": 94 , "percentage": 50}
+    { 'name': 'Devín', 'lat': 48.17576940000001, 'lng': 16.9822035, "total": 85, "percentage": 50 },
+    { 'name': 'Devínska Nová Ves', 'lat': 48.2124272, 'lng': 16.977857450000002, "total": 252, "percentage": 50 },
+    { 'name': 'Dúbravka', 'lat': 48.18664769999999, 'lng': 17.0307259, "total": 99, "percentage": 50 },
+    { 'name': 'Jarovce', 'lat': 48.0656973, 'lng': 17.1130712, "total": 198, "percentage": 50 },
+    { 'name': 'Karlova Ves', 'lat': 48.1586236, 'lng': 17.0567608, "total": 65, "percentage": 50 },
+    { 'name': 'Nové Mesto', 'lat': 48.171957, 'lng': 17.1116032, "total": 496, "percentage": 50 },
+    { 'name': 'Petržalka', 'lat': 48.1264994, 'lng': 17.093808, "total": 77, "percentage": 50 },
+    { 'name': 'Podunajské Biskupice', 'lat': 48.12717869999999, 'lng': 17.2129755, "total": 362, "percentage": 50 },
+    { 'name': 'Rača', 'lat': 48.2089267, 'lng': 17.1526131, "total": 5, "percentage": 50 },
+    { 'name': 'Rusovce', 'lat': 48.0482758, 'lng': 17.1482599, "total": 131, "percentage": 50 },
+    { 'name': 'Ružinov', 'lat': 48.14632169999999, 'lng': 17.1686429, "total": 129, "percentage": 50 },
+    { 'name': 'Staré Mesto', 'lat': 48.1527568, 'lng': 17.0916014, "total": 502, "percentage": 50 },
+    { 'name': 'Vajnory', 'lat': 48.1985806, 'lng': 17.201461, "total": 2, "percentage": 50 },
+    { 'name': 'Vrakuňa', 'lat': 48.1448249, 'lng': 17.2028947, "total": 9, "percentage": 50 },
+    { 'name': 'Záhorská Bystrica', 'lat': 48.24226059999999, 'lng': 17.0543847, "total": 2, "percentage": 50 },
+    { 'name': 'Čunovo', 'lat': 48.0303903, 'lng': 17.194552350000002, "total": 94, "percentage": 50 }
   ])
   const [mapCenter, setMapCenter] = React.useState(defaultCenter)
   const [mapZoom, setMapZoom] = React.useState(defaultZoom)
@@ -104,12 +109,12 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div>
       <Navbar bg="dark" variant="dark">
         <Container>
           <Navbar.Brand href="#home">UnderBranc</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link active href="#home">Dashboard</Nav.Link>
+            <Nav.Link active href="#dashboard">Dashboard</Nav.Link>
             {/* <Nav.Link href="#features">Features</Nav.Link> */}
             <Nav.Link href="#pricing">About</Nav.Link>
           </Nav>
