@@ -51,16 +51,23 @@ class NotificationWidget extends React.Component {
         ]
     }
 
-    componentDidMount() {
-        axios.get('http://20.105.168.42/api/dashboard/notifications'
-        ).then(res => {
-            console.log(res.data)
-            this.setState({
-                notifications: res.data,
-                maxPage: Math.ceil(res.data.length / this.state.perPage)
-            })
-        }).catch(err => {
-            console.error('Getting notifs error:', err)
+    // componentDidMount() {
+    //     axios.get('http://20.105.168.42/api/dashboard/notifications'
+    //     ).then(res => {
+    //         console.log(res.data)
+    //         this.setState({
+    //             notifications: res.data,
+    //             maxPage: Math.ceil(res.data.length / this.state.perPage)
+    //         })
+    //     }).catch(err => {
+    //         console.error('Getting notifs error:', err)
+    //     })
+    // }
+
+    componentWillReceiveProps() {
+        this.setState({
+            maxPage: Math.ceil(this.props.alerts.length / this.state.perPage),
+            page: 1
         })
     }
 
@@ -122,9 +129,9 @@ class NotificationWidget extends React.Component {
 
     render() {
         return (
-            <Card style={{ textAlign: 'left', margin: '20px', padding: '10px', height: '80vh' }}>
-                <Card.Title>WasteBin Alerts</Card.Title>
-                <Table style={{tableLayout:'fixed'}} borderless striped hover size="sm">
+            <Card bg="light" style={{ textAlign: 'left', margin: '20px', padding: '10px', height: '80vh' }}>
+                <Card.Title>Bin Alerts</Card.Title>
+                <Table style={{ tableLayout: 'fixed' }} borderless striped hover size="sm">
                     <thead>
                         <th style={{ width: '15%' }}>Part</th>
                         <th style={{ width: '20%' }}>Address</th>
@@ -134,21 +141,22 @@ class NotificationWidget extends React.Component {
                     </thead>
                     <tbody>
                         {
-                            this.state.notifications.slice((this.state.page - 1) * this.state.perPage, (this.state.page - 1) * this.state.perPage + this.state.perPage).map(n =>
-                                <tr>
-                                    <td style={{width:'100px', whiteSpace:'nowrap', overflow:'hidden', textOverflow: 'ellipsis'}}>{n.city_part}</td>
-                                    <td style={{width:'100px', whiteSpace:'nowrap', overflow:'hidden', textOverflow: 'ellipsis'}}>{n.street} {n.orientation_number}</td>
-                                    <td>{n.severity}</td>
-                                    <td>{n.volume_in_litres} l</td>
-                                    <td style={{
-                                        backgroundColor: wasteColors[n.waste_type],
-                                        textAlign: 'center',
-                                        color: wasteTags[n.waste_type] == 'ZMES' ? 'white' : 'black'
-                                    }}>
-                                        <b>{wasteTags[n.waste_type]?wasteTags[n.waste_type]:n.waste_type}</b>
-                                    </td>
-                                </tr>
-                            )
+                            this.props.alerts ?
+                                this.props.alerts.slice((this.state.page - 1) * this.state.perPage, (this.state.page - 1) * this.state.perPage + this.state.perPage).map(n =>
+                                    <tr>
+                                        <td style={{ width: '100px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.city_part}</td>
+                                        <td style={{ width: '100px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.street} {n.orientation_number}</td>
+                                        <td>{n.severity}</td>
+                                        <td>{n.volume_in_litres} l</td>
+                                        <td style={{
+                                            backgroundColor: wasteColors[n.waste_type],
+                                            textAlign: 'center',
+                                            color: wasteTags[n.waste_type] == 'ZMES' ? 'white' : 'black'
+                                        }}>
+                                            <b>{wasteTags[n.waste_type] ? wasteTags[n.waste_type] : n.waste_type}</b>
+                                        </td>
+                                    </tr>
+                                ) : null
                         }
                     </tbody>
                 </Table>

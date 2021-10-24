@@ -1,21 +1,26 @@
 import './App.scss';
-import { Navbar, Nav, Container, Row, Card, Col, Button, Table, ProgressBar } from 'react-bootstrap'
+import { Navbar, Nav, Container, Row, Card, Col, Button, ButtonGroup, ProgressBar, FloatingLabel, Form } from 'react-bootstrap'
 import MapWidget from './components/MapWidget/MapWidget';
-import NotificationWidget from './components/NotificationWidget/NotificationWidget';
+import NotificationWidget, { wasteColors, wasteTags } from './components/NotificationWidget/NotificationWidget';
 import { useEffect } from 'react';
 import React from 'react';
 import axios from 'axios';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from 'react-router-dom'
 
 const defaultZoom = 12
 const defaultCenter = {
   lat: 48.148598,
   lng: 17.107748
 }
+
+const waste = [
+  { 'tag': 'SKLO', 'color': '#008e5c', textColor: 'black' },
+  { 'tag': 'PAPIER', 'color': '#0072bb', textColor: 'black' },
+  { 'tag': 'PLAST', 'color': '#ffd413', textColor: 'black' },
+  { 'tag': 'ZMES', 'color': '#1d1d1b', textColor: 'white' },
+  { 'tag': 'GASTRO', 'color': '#f07e01', textColor: 'black' },
+  { 'tag': 'BRO', 'color': '#7c4f25', textColor: 'black' },
+  { 'tag': 'KOV', 'color': '#e30711', textColor: 'black' }
+]
 
 function App() {
   const [districts, setDistricts] = React.useState([
@@ -40,6 +45,7 @@ function App() {
   const [mapZoom, setMapZoom] = React.useState(defaultZoom)
   const [selected, setSelected] = React.useState('')
   const [alerts, setAlerts] = React.useState('')
+  const [binTypes, setBinTypes] = React.useState(waste.map(w => w.tag))
 
   const getBinData = () => {
     axios.get(
@@ -100,12 +106,40 @@ function App() {
     }
   }
 
+  const isChecked = (bin) => {
+    if (binTypes.includes(wasteTags[bin.waste_type])) {
+      return true
+    }
+    return false
+  }
+
   const getBins = () => {
     if (selected) {
-      console.log(alerts.filter(a => a.city_part.toLowerCase() === selected.toLowerCase()))
-      return alerts.filter(a => a.city_part.toLowerCase() === selected.toLowerCase())
+      return alerts.filter(isChecked).filter(a => a.city_part.toLowerCase() === selected.toLowerCase())
     }
-    return null
+    return alerts
+  }
+
+  const getAlerts = () => {
+    if (selected) {
+      return alerts.filter(isChecked).filter(a => a.city_part.toLowerCase() === selected.toLowerCase())
+    }
+    if (alerts) {
+      return alerts.filter(isChecked)
+    }
+    return alerts
+  }
+
+  const handleCheck = (tag) => {
+    if (binTypes.includes(tag)) {
+      let updated = binTypes.filter(t => t !== tag)
+      setBinTypes(
+        updated
+      )
+    } else {
+      let updated = [...binTypes, tag]
+      setBinTypes(updated)
+    }
   }
 
   return (
@@ -133,12 +167,34 @@ function App() {
             )
           }
         </div>
+        <Card bg="light" style={{ padding: '10px', margin: 'auto', marginLeft: '20px', marginRight: '20px', height: '80px' }}>
+          <Card.Title>
+            Bin Filtering
+          </Card.Title>
+          <Form.Group className="mb-3" controlId="formBasicCheckbox">
+            {
+              waste.map(w =>
+                <Form.Check
+                  checked={binTypes.includes(w.tag)}
+                  onChange={e => { handleCheck(w.tag) }}
+                  style={{ display: 'inline-block', marginLeft: '10px', borderBottomStyle: 'solid', borderBottomWidth: '2px', borderColor: w.color }}
+                  type="checkbox"
+                  label={w.tag} />
+              )
+            }
+          </Form.Group>
+        </Card>
         <div>
           <div style={{ float: 'left', width: '60%' }}>
-            <MapWidget bins={getBins()} part={selected} center={mapCenter} zoom={mapZoom} districts={districts} />
+            <MapWidget
+              bins={getBins()}
+              part={selected}
+              center={mapCenter}
+              zoom={mapZoom}
+              districts={districts} />
           </div>
           <div style={{ float: 'left', width: '40%' }}>
-            <NotificationWidget alerts={getBins()} part={selected} />
+            <NotificationWidget alerts={getAlerts()} part={selected} />
           </div>
         </div>
       </div>
