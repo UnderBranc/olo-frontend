@@ -5,6 +5,7 @@ import NotificationWidget, { wasteColors, wasteTags } from './components/Notific
 import { useEffect } from 'react';
 import React from 'react';
 import axios from 'axios';
+import { Doughnut } from 'react-chartjs-2';
 
 const defaultZoom = 12
 const defaultCenter = {
@@ -154,7 +155,7 @@ function App() {
           </Nav>
         </Container>
       </Navbar>
-      <div className="body" style={{ width: '95%', margin: 'auto', height: '100vh' }}>
+      <div className="body" style={{ width: '95%', margin: 'auto', height: '150vh' }}>
         <br />
         <div style={{ width: '100%', margin: 'auto', height: '150px', textAlign: 'center', marginBottom: '40px' }}>
           <h3>Overview</h3>
