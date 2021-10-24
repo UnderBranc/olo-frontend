@@ -5,7 +5,7 @@ import NotificationWidget, { wasteColors, wasteTags } from './components/Notific
 import { useEffect } from 'react';
 import React from 'react';
 import axios from 'axios';
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
+import { Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Sector, Cell, ResponsiveContainer, BarChart } from 'recharts';
 
 
 const defaultZoom = 12
@@ -66,12 +66,27 @@ function App() {
         ).length
       }
     })
-    console.log(bean);
     return bean;
   }
 
-  const renderLabel = function(entry) {
-    return entry.name;
+  const getBarData = () => {
+    let bins = getBins();
+    if (!bins)
+      return [];
+    let bean = waste.map(w => {
+      return {
+        name: w.tag,
+        alerts: bins.filter(bin =>
+          wasteTags[bin.waste_type] === w.tag
+        ).reduce((a, b) => { return a + b.severity }, 0)
+      }
+    })
+    console.log(bean)
+    return bean;
+  }
+
+  const renderLabel = function (entry) {
+    return entry.value;
   }
 
   const getBinData = () => {
@@ -181,7 +196,7 @@ function App() {
           </Nav>
         </Container>
       </Navbar>
-      <div className="body" style={{ width: '95%', margin: 'auto', height: '150vh' }}>
+      <div className="body" style={{ width: '95%', margin: 'auto' }}>
         <br />
         <div style={{ width: '100%', margin: 'auto', height: '150px', textAlign: 'center', marginBottom: '40px' }}>
           <h3>Overview</h3>
@@ -223,29 +238,71 @@ function App() {
           <div style={{ float: 'left', width: '40%' }}>
             <NotificationWidget alerts={getAlerts()} part={selected} />
           </div>
-          <div>
-            <h2 style={{ textAlign: 'center' }}>Data visualization</h2>
-            <Card bg="light" style={{ padding: '10px', margin: 'auto', marginLeft: '20px', marginRight: '20px'}}>
+          <div style={{
+            margin: 'auto'
+          }}>
+            <Card bg="light" style={{
+              padding: '10px',
+              margin: '20px',
+              width: '30%',
+              height: '500px',
+              float: 'left'
+            }}>
               <Card.Title>
                 Waste Type Distribution
               </Card.Title>
-              <PieChart width={400} height={400}>
-                <Pie
-                  data={getPieData()}
-                  cx={200}
-                  cy={200}
-                  innerRadius={60}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  paddingAngle={5}
-                  dataKey="value"
-                  label={renderLabel}
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart width={400} height={400}>
+                  <Pie
+                    data={getPieData()}
+                    innerRadius={100}
+                    outerRadius={130}
+                    fill="#8884d8"
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={renderLabel}
+                  >
+                    {getPieData().map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card bg="light" style={{
+              padding: '10px',
+              margin: '20px',
+              width: '65%',
+              height: '500px',
+              float: 'right'
+            }}>
+              <Card.Title>
+                Waste Severity Per Type
+              </Card.Title>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  width={300}
+                  height={300}
+                  data={getBarData()}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
                 >
-                  {getPieData().map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-              </PieChart>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar barSize={40} dataKey="alerts" fill="#8884d8">
+                    {getBarData().map((entry, index) => (
+                      <Cell key={`bar-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </Card>
 
           </div>

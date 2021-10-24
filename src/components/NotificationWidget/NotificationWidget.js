@@ -65,7 +65,6 @@ class NotificationWidget extends React.Component {
     // }
 
     componentWillReceiveProps(nextprops) {
-        console.log(nextprops.alerts)
         this.setState({
             maxPage: Math.ceil(nextprops.alerts.length / this.state.perPage),
             page: 1
