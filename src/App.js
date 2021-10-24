@@ -191,7 +191,6 @@ function App() {
           <Navbar.Brand href="#home">UnderBranc</Navbar.Brand>
           <Nav className="me-auto">
             <Nav.Link active href="#dashboard">Dashboard</Nav.Link>
-            {/* <Nav.Link href="#features">Features</Nav.Link> */}
             <Nav.Link href="#pricing">About</Nav.Link>
           </Nav>
         </Container>
