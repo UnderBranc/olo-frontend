@@ -5,7 +5,8 @@ import NotificationWidget, { wasteColors, wasteTags } from './components/Notific
 import { useEffect } from 'react';
 import React from 'react';
 import axios from 'axios';
-import { Doughnut } from 'react-chartjs-2';
+import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
+
 
 const defaultZoom = 12
 const defaultCenter = {
@@ -22,6 +23,10 @@ const waste = [
   { 'tag': 'BRO', 'color': '#7c4f25', textColor: 'black' },
   { 'tag': 'KOV', 'color': '#e30711', textColor: 'black' }
 ]
+
+const COLORS = waste.map(w => {
+  return w.color;
+})
 
 function App() {
   const [districts, setDistricts] = React.useState([
@@ -47,6 +52,27 @@ function App() {
   const [selected, setSelected] = React.useState('')
   const [alerts, setAlerts] = React.useState('')
   const [binTypes, setBinTypes] = React.useState(waste.map(w => w.tag))
+
+
+  const getPieData = () => {
+    let bins = getBins();
+    if (!bins)
+      return [];
+    let bean = waste.map(w => {
+      return {
+        name: w.tag,
+        value: bins.filter(bin =>
+          wasteTags[bin.waste_type] === w.tag
+        ).length
+      }
+    })
+    console.log(bean);
+    return bean;
+  }
+
+  const renderLabel = function(entry) {
+    return entry.name;
+  }
 
   const getBinData = () => {
     axios.get(
@@ -196,6 +222,32 @@ function App() {
           </div>
           <div style={{ float: 'left', width: '40%' }}>
             <NotificationWidget alerts={getAlerts()} part={selected} />
+          </div>
+          <div>
+            <h2 style={{ textAlign: 'center' }}>Data visualization</h2>
+            <Card bg="light" style={{ padding: '10px', margin: 'auto', marginLeft: '20px', marginRight: '20px'}}>
+              <Card.Title>
+                Waste Type Distribution
+              </Card.Title>
+              <PieChart width={400} height={400}>
+                <Pie
+                  data={getPieData()}
+                  cx={200}
+                  cy={200}
+                  innerRadius={60}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  paddingAngle={5}
+                  dataKey="value"
+                  label={renderLabel}
+                >
+                  {getPieData().map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </Card>
+
           </div>
         </div>
       </div>
